@@ -8,6 +8,7 @@ import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 import { REVIEW_API_END_POINT } from "@/utils/constant";
 import axios from "axios";
+import { useAuth } from "../../contexts/authContext"; // <-- Import useAuth to access token
 
 const CodeEditor = () => {
   const placeholder = `// Enter your code / problem name / leetcode - question number`;
@@ -16,6 +17,8 @@ const CodeEditor = () => {
 
   const [review, setReview] = useState(``);
   const [loading, setLoading] = useState(false);
+
+  const { token } = useAuth(); // <-- Use token from AuthContext
 
   useEffect(() => {
     prism.highlightAll();
@@ -40,22 +43,32 @@ const CodeEditor = () => {
 
   async function reviewCode() {
     setLoading(true);
+
     try {
+      // Check if token is available
+      if (!token) {
+        setReview("You need to log in first.");
+        setLoading(false);
+        return;
+      }
+
       const response = await axios.post(
         `${REVIEW_API_END_POINT}/review-code`,
         { code },
         {
-          headers: 
-          {
+          headers: {
             Authorization: `Bearer ${token}`, // Use token from context
           },
-          withCredentials: true, // <-- This enables sending cookies
+          withCredentials: true, 
         }
       );
+
       setReview(response.data);
     } catch (error) {
+      console.error("Error:", error.response || error);
       setReview("Error fetching review. Please try again.");
     }
+
     setLoading(false);
   }
 
