@@ -40,7 +40,6 @@ const Login = () => {
       );
 
       if (res.data.success && res.data.token) {
-        console.log(res.data.token);
         login(res.data.token); // This sets auth in context and persists it in localStorage
         toast.success(res.data.message);
         setTimeout(() => {
@@ -57,8 +56,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-
-
 
 
   return (

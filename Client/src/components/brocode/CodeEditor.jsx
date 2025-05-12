@@ -24,7 +24,8 @@ const CodeEditor = () => {
     prism.highlightAll();
   }, []);
 
-  const handleCodeChange = (newCode) => {
+  const handleCodeChange = (newCode) => 
+  {
     // If the user is typing, remove the placeholder text
     if (!hasTyped && newCode !== placeholder) {
       setHasTyped(true);
@@ -41,12 +42,15 @@ const CodeEditor = () => {
     }
   };
 
-  async function reviewCode() {
+  async function reviewCode() 
+  {
     setLoading(true);
 
-    try {
+    try 
+    {
       // Check if token is available
-      if (!token) {
+      if (!token) 
+      {
         setReview("You need to log in first.");
         setLoading(false);
         return;
@@ -56,7 +60,8 @@ const CodeEditor = () => {
         `${REVIEW_API_END_POINT}/review-code`,
         { code },
         {
-          headers: {
+          headers: 
+          {
             Authorization: `Bearer ${token}`, // Use token from context
           },
           withCredentials: true, 
