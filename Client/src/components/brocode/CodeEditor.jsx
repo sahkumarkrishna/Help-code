@@ -44,7 +44,13 @@ const CodeEditor = () => {
       const response = await axios.post(
         `${REVIEW_API_END_POINT}/review-code`,
         { code },
-        { withCredentials: true }
+        {
+          headers: 
+          {
+            Authorization: `Bearer ${token}`, // Use token from context
+          },
+          withCredentials: true, // <-- This enables sending cookies
+        }
       );
       setReview(response.data);
     } catch (error) {
