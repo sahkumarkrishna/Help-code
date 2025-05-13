@@ -8,7 +8,7 @@ import axios from "axios";
 import { USER_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "../contexts/authContext"; // <-- Import useAuth to get login function
+import { useAuth } from "../contexts/authContext";
 
 const Login = () => {
   const [input, setInput] = useState({
@@ -19,15 +19,16 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, token } = useAuth(); // <-- Use login and token from context
+  const { login, token } = useAuth();
 
-  // ✅ Auto redirect if token already exists
+  // ✅ Auto redirect if token already exists or show login-required toast
   useEffect(() => {
     if (token) {
       toast.success("You are already logged in.");
       navigate("/brocode");
-    } else if (location.state?.showToast) {
+    } else if (location.state?.fromPrivateRoute) {
       toast.error("Please log in first.");
+      navigate(location.pathname, { replace: true, state: {} }); // clear state
     }
   }, [token, location.state, navigate]);
 
@@ -39,19 +40,15 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post(
-        `${USER_API_END_POINT}/login`,
-        input,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${input.token}`, // Add Authorization header if needed
-          },
-        }
-      );
+      const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${input.token}`,
+        },
+      });
 
       if (res.data.success && res.data.token) {
-        login(res.data.token); // This sets auth in context and persists it in localStorage
+        login(res.data.token);
         toast.success(res.data.message);
         setTimeout(() => {
           navigate("/brocode");
