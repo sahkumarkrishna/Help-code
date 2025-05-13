@@ -107,7 +107,7 @@ const CodeEditor = () => {
         </section>
 
         {/* Review Output Section */}
-        <section className="bg-[#002b5c] p-4 rounded-2xl shadow-md overflow-auto">
+        <section className="bg-[#002b5c] p-4 rounded-2xl shadow-md overflow-x-auto whitespace-pre-wrap break-words">
           <h2 className="text-xl font-bold mb-3 text-[#FFD700]">Review Output</h2>
           {loading ? (
             <div className="flex justify-center items-center py-8">

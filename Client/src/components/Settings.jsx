@@ -15,6 +15,7 @@ const Settings = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const { logout } = useAuth(); // Use the logout function from context
+  const { token } = useAuth();
   const navigate = useNavigate();
 
   const handleModalSubmit = async () => {
@@ -29,7 +30,12 @@ const Settings = () => {
       const { data } = await axios.patch(
         `${USER_API_END_POINT}/profile/update`,
         updateData,
-        { withCredentials: true }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Use token from context
+          },
+          withCredentials: true, 
+        }
       );
 
       toast.success(data.message);

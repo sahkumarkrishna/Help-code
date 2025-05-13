@@ -26,7 +26,7 @@ const PORT = process.env.PORT || 3000;
 
 //APIs
 app.use("/api/v1/user", userRoute);
-app.use("/api/v1/core", codeReviewRoute);
+app.use("/api/v1/bro", codeReviewRoute);
 
 //APP is LISTENING
 app.listen(PORT, ()=>

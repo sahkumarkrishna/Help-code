@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "./home/Navbar";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { USER_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
@@ -18,7 +18,18 @@ const Login = () => {
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth(); // <-- Use login function from context
+  const location = useLocation();
+  const { login, token } = useAuth(); // <-- Use login and token from context
+
+  // ✅ Auto redirect if token already exists
+  useEffect(() => {
+    if (token) {
+      toast.success("You are already logged in.");
+      navigate("/brocode");
+    } else if (location.state?.showToast) {
+      toast.error("Please log in first.");
+    }
+  }, [token, location.state, navigate]);
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -34,7 +45,7 @@ const Login = () => {
         {
           withCredentials: true,
           headers: {
-            Authorization: `Bearer ${input.token}`,  // Add Authorization header if needed
+            Authorization: `Bearer ${input.token}`, // Add Authorization header if needed
           },
         }
       );
@@ -56,7 +67,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-[#003153] text-white">

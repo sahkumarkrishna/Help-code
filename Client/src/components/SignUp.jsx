@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from "./home/Navbar";
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { USER_API_END_POINT } from "@/utils/constant";
 import { toast } from 'sonner';
 import axios from 'axios';
+import { useAuth } from "../contexts/authContext"; // ✅ useAuth hook
 
 const Signup = () => {
   const [input, setInput] = useState({
@@ -16,6 +17,15 @@ const Signup = () => {
   });
 
   const navigate = useNavigate();
+  const { token } = useAuth(); // ✅ get token from auth context
+
+  // ✅ Redirect if already logged in
+  useEffect(() => {
+    if (token) {
+      toast.success("You are already logged in.");
+      navigate("/brocode");
+    }
+  }, [token, navigate]);
 
   const changeHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
