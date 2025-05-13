@@ -18,36 +18,44 @@ const Settings = () => {
   const { token } = useAuth();
   const navigate = useNavigate();
 
-  const handleModalSubmit = async () => {
-    try {
-      const updateData = {
-        username,
-        email,
-        password, // new password
-        currentPassword, // used for confirmation
-      };
+const handleModalSubmit = async () => {
+  try {
+    const updateData = {};
 
-      const { data } = await axios.patch(
-        `${USER_API_END_POINT}/profile/update`,
-        updateData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Use token from context
-          },
-          withCredentials: true, 
-        }
-      );
+    if (username) updateData.username = username;
+    if (email) updateData.email = email;
+    if (password) updateData.password = password;
+    if (currentPassword) updateData.currentPassword = currentPassword;
 
-      toast.success(data.message);
-      setUsername("");
-      setEmail("");
-      setPassword("");
-      setCurrentPassword("");
-      setShowModal(false);
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Update failed");
+    // Only send updateData if it's not empty
+    if (Object.keys(updateData).length === 0) {
+      toast.info("Please provide at least one field to update.");
+      return;
     }
-  };
+
+    const { data } = await axios.patch(
+      `${USER_API_END_POINT}/update`,
+      updateData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Use token from context
+        },
+        withCredentials: true,
+      }
+    );
+
+    toast.success(data.message);
+    setUsername("");
+    setEmail("");
+    setPassword("");
+    setCurrentPassword("");
+    setShowModal(false);
+  } catch (error) {
+    console.error(error); // For debugging
+    toast.error(error.response?.data?.message || "Update failed");
+  }
+};
+
 
   const updateHandler = () => {
     if (!username && !email && !password) {
