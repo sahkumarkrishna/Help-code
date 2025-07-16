@@ -6,31 +6,35 @@ import connectDB from "./utils/db.js";
 import userRoute from "./routes/UserRoute.js";
 import codeReviewRoute from "./routes/CodeRoute.js";
 
-dotenv.config({});
+dotenv.config();
 
 const app = express();
 
-// Get frontend URL from environment variables
-const FRONTEND_URL = process.env.FRONTEND_URL;
+// 🔐 Environment variables
+const PORT = process.env.PORT || 3000;
+const FRONTEND_URL = process.env.FRONTEND_URL?.split(",") || [
+  "http://localhost:5173",
+  "https://krishna-code.vercel.app",
+];
 
+// 🌐 CORS configuration
 const corsOptions = {
-    origin: FRONTEND_URL|| "http://help-code-omega.vercel.app",
-    credentials: true,
+  origin: FRONTEND_URL,
+  credentials: true,
 };
 
-// Middleware
+// 🧩 Middlewares
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Routes
+// 📦 API Routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/bro", codeReviewRoute);
 
-// Server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    connectDB();
-    console.log(`Server running at port ${PORT}`);
+// 🚀 Start server
+app.listen(PORT, async () => {
+  await connectDB();
+  console.log(`✅ Server running on port ${PORT}`);
 });
