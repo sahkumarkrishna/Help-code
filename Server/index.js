@@ -10,31 +10,28 @@ dotenv.config();
 
 const app = express();
 
-// 🔐 Environment variables
-const PORT = process.env.PORT || 3000;
-const FRONTEND_URL = process.env.FRONTEND_URL?.split(",") || [
-  "http://localhost:5173",
-  "https://krishna-code.vercel.app",
-];
+// ✅ Setup CORS properly
+const allowedOrigins = (process.env.FRONTEND_URL || "http://help-code-omega.vercel.app").split(",");
 
-// 🌐 CORS configuration
 const corsOptions = {
-  origin: FRONTEND_URL,
-  credentials: true,
+  origin: allowedOrigins,
+  credentials: true, // allow cookies/auth
 };
 
-// 🧩 Middlewares
-app.use(cors(corsOptions));
+app.use(cors(corsOptions)); // ✅ apply only once
+
+// ✅ Other middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// 📦 API Routes
+// ✅ API Routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/bro", codeReviewRoute);
 
-// 🚀 Start server
-app.listen(PORT, async () => {
-  await connectDB();
+// ✅ Server start
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  connectDB();
   console.log(`✅ Server running on port ${PORT}`);
 });
