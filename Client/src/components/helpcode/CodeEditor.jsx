@@ -113,7 +113,7 @@ const CodeEditor = () => {
         {/* Review Output Section */}
        {/* Review Output Section */}
         <section className="bg-[#002b5c]/80 backdrop-blur-md p-10 rounded-3xl shadow-2xl border border-[#004080] transition-all duration-300">
-          <h2 className="text-4xl font-bold text-yellow-400 mb-8 tracking-wide">
+          <h2 className="text-2xl font-bold text-yellow-400 mb-8 tracking-wide">
             ✅ Review Output
           </h2>
 
