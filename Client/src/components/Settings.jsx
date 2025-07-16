@@ -3,91 +3,88 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { USER_API_END_POINT } from "@/utils/constant";
-import Navbar from "./brocode/Navbar";
+import Navbar from "./helpcode/Navbar";
 import Footer from "./home/Footer";
-import { useAuth } from "../contexts/authContext";  // Import the useAuth hook
+import { useAuth } from "../contexts/authContext";
+
+// ✅ Use .env variable
+const USER_API_END_POINT = import.meta.env.VITE_USER_API;
 
 const Settings = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState(""); // New password
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
-  const { logout } = useAuth(); // Use the logout function from context
-  const { token } = useAuth();
+
+  const { logout, token } = useAuth();
   const navigate = useNavigate();
 
-const handleModalSubmit = async () => {
-  try {
-    const updateData = {};
+  const handleModalSubmit = async () => {
+    try {
+      const updateData = {};
 
-    if (username) updateData.username = username;
-    if (email) updateData.email = email;
-    if (password) updateData.password = password;
-    if (currentPassword) updateData.currentPassword = currentPassword;
+      if (username) updateData.username = username;
+      if (email) updateData.email = email;
+      if (password) updateData.password = password;
+      if (currentPassword) updateData.currentPassword = currentPassword;
 
-    // Only send updateData if it's not empty
-    if (Object.keys(updateData).length === 0) {
-      toast.info("Please provide at least one field to update.");
-      return;
-    }
+      if (Object.keys(updateData).length === 0) {
+        toast.info("Please provide at least one field to update.");
+        return;
+      }
 
-    const { data } = await axios.patch(
-      `${USER_API_END_POINT}/update`,
-      updateData,
-      {
+      const { data } = await axios.patch(`${USER_API_END_POINT}/update`, updateData, {
         headers: {
-          Authorization: `Bearer ${token}`, // Use token from context
+          Authorization: `Bearer ${token}`,
         },
         withCredentials: true,
-      }
-    );
+      });
 
-    toast.success(data.message);
-    setUsername("");
-    setEmail("");
-    setPassword("");
-    setCurrentPassword("");
-    setShowModal(false);
-  } catch (error) {
-    console.error(error); // For debugging
-    toast.error(error.response?.data?.message || "Update failed");
-  }
-};
-
+      toast.success(data.message);
+      setUsername("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      setCurrentPassword("");
+      setShowModal(false);
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Update failed");
+    }
+  };
 
   const updateHandler = () => {
     if (!username && !email && !password) {
       toast.info("Please enter at least one field to update.");
       return;
     }
-    setShowModal(true); // show password confirm modal
+
+    if (password && password !== confirmPassword) {
+      toast.error("New password and confirm password do not match.");
+      return;
+    }
+
+    setShowModal(true);
   };
 
   const logoutHandler = async () => {
-    try 
-    {
-      // Call the backend to logout
+    try {
       const { data } = await axios.get(`${USER_API_END_POINT}/logout`, {
         withCredentials: true,
       });
 
       toast.success(data.message);
-
-      // Clear authentication state using context
-      logout(); 
-
-      navigate("/"); 
+      logout();
+      navigate("/");
     } catch (error) {
       toast.error(error.response?.data?.message || "Logout failed");
     }
   };
 
-
   return (
     <div className="min-h-screen bg-[#001F3F] text-white flex flex-col">
-      {/* Add Navbar here */}
       <Navbar />
 
       <div className="w-full max-w-md bg-[#002b5c] rounded-2xl shadow-lg p-8 mx-auto mt-10 mb-10 flex-grow">
@@ -118,6 +115,14 @@ const handleModalSubmit = async () => {
             onChange={(e) => setPassword(e.target.value)}
           />
 
+          <input
+            type="password"
+            placeholder="Confirm New Password"
+            className="w-full p-3 rounded-lg bg-[#003366] text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FFD700]"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+
           <Button
             className="w-full mt-2 bg-[#FFD700] text-[#001F3F] hover:bg-black hover:text-white transition-all"
             onClick={updateHandler}
@@ -135,7 +140,6 @@ const handleModalSubmit = async () => {
         </div>
       </div>
 
-      {/* Password confirmation modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white text-black rounded-lg p-6 w-full max-w-sm">
@@ -165,7 +169,6 @@ const handleModalSubmit = async () => {
         </div>
       )}
 
-      {/* Footer component */}
       <Footer />
     </div>
   );

@@ -5,10 +5,12 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { USER_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "../contexts/authContext";
+
+// ✅ Load API URL from .env
+const USER_API = import.meta.env.VITE_USER_API;
 
 const Login = () => {
   const [input, setInput] = useState({
@@ -21,14 +23,13 @@ const Login = () => {
   const location = useLocation();
   const { login, token } = useAuth();
 
-  // ✅ Auto redirect if token already exists or show login-required toast
   useEffect(() => {
     if (token) {
       toast.success("You are already logged in.");
-      navigate("/brocode");
+      navigate("/helpcode");
     } else if (location.state?.fromPrivateRoute) {
       toast.error("Please log in first.");
-      navigate(location.pathname, { replace: true, state: {} }); // clear state
+      navigate(location.pathname, { replace: true, state: {} });
     }
   }, [token, location.state, navigate]);
 
@@ -40,26 +41,23 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
+      const res = await axios.post(`${USER_API}/login`, input, {
         withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${input.token}`,
-        },
       });
 
       if (res.data.success && res.data.token) {
         login(res.data.token);
         toast.success(res.data.message);
         setTimeout(() => {
-          navigate("/brocode");
+          navigate("/helpcode");
         }, 100);
       } else {
         toast.error(res.data.message || "Login failed");
       }
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "An error occurred during login";
-      toast.error(errorMessage);
+      toast.error(
+        error.response?.data?.message || "An error occurred during login"
+      );
     } finally {
       setLoading(false);
     }

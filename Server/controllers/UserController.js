@@ -4,94 +4,49 @@ import jwt from "jsonwebtoken";
 
 
 // REGISTER LOGIC
-export const register = async (req, res) => 
-{
-  try 
-  {
-    const { email, username, password } = req.body;
+export const register = async (req, res) => {
+  try {
+    const { email, username, password, confirmPassword } = req.body;
 
-    if (!email || !username || !password) 
-    {
-      return res.status(400).json
-      ({
-        message: "Enter All The Required Fields",
-        success: false,
-      });
+    if (!email || !username || !password || !confirmPassword) {
+      return res.status(400).json({ message: "Enter all the required fields", success: false });
     }
 
-    // Validate username (must start with a lowercase letter or number, and can contain lowercase letters, numbers, and special characters)
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: "Password and confirm password do not match", success: false });
+    }
+
     const usernameRegex = /^[a-z0-9][a-z0-9!@#$%^&*()_+=-]{7,}$/;
-    if (!usernameRegex.test(username)) 
-    {
-      return res.status(400).json
-      ({
-        message: "Username must be of minimum-length of 8 and start with a lowercase letter or number and can only contain lowercase letters, numbers, and special characters (e.g., !@#$%^&*)",
+    if (!usernameRegex.test(username)) {
+      return res.status(400).json({
+        message: "Username must be at least 8 characters and start with lowercase/number",
         success: false,
       });
     }
 
-    // Validate password format BEFORE hashing
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-
-    if (!passwordRegex.test(password)) 
-    {
-        return res.status(400).json
-        ({
-            message: "Password must be at least 8 characters and include uppercase, lowercase, number, and special character",
-            success: false,
-        });
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        message: "Password must include uppercase, lowercase, number, and special character",
+        success: false,
+      });
     }
 
-    // Check if email already exists
     const existingEmail = await User.findOne({ email });
-    if (existingEmail) 
-    {
-      return res.status(400).json
-      ({
-        message: "Email already registered",
-        success: false,
-      });
-    }
+    if (existingEmail) return res.status(400).json({ message: "Email already registered", success: false });
 
-    // Check if username already exists
     const existingUsername = await User.findOne({ username });
-    if (existingUsername) 
-    {
-      return res.status(400).json
-      ({
-        message: "Username already taken",
-        success: false,
-      });
-    }
+    if (existingUsername) return res.status(400).json({ message: "Username already taken", success: false });
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
+    await User.create({ email, username, password: hashedPassword });
 
-    // Create new user
-    await User.create
-    ({
-      email,
-      username,
-      password: hashedPassword,
-    });
-
-    return res.status(201).json
-    ({
-      message: "Account created successfully",
-      success: true,
-    });
-  } 
-  catch (error) 
-  {
-    console.log(error);
-    return res.status(500).json
-    ({
-      message: "Server error during registration",
-      success: false,
-    });
+    return res.status(201).json({ message: "Account created successfully", success: true });
+  } catch (error) {
+    console.log("REGISTER ERROR:", error);
+    return res.status(500).json({ message: "Server error during registration", success: false });
   }
 };
-
 
 //LOGIN LOGIC
 export const login = async (req, res) => 

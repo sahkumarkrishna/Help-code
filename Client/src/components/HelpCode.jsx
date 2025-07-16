@@ -1,6 +1,6 @@
 import React from 'react'
-import Navbar from './brocode/Navbar'
-import CodeEditor from './brocode/CodeEditor'
+import Navbar from './helpcode/Navbar'
+import CodeEditor from './helpcode/CodeEditor'
 
 const BroCode = () => 
 {

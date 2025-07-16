@@ -4,33 +4,37 @@ import PrivateRoute from './components/PrivateRoute';
 import Home from './components/Home';
 import Login from './components/Login';
 import Signup from './components/SignUp';
-import Brocode from './components/BroCode';
+import HelpCode from './components/HelpCode';
 import Settings from './components/Settings';
+import NotFound from '../PageNot'; // ✅ Make sure this path is correct
 
 const App = () => {
   return (
     <Routes>
       <Route path='/' element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      
+      <Route path='/login' element={<Login />} />
+      <Route path='/signup' element={<Signup />} />
+
       {/* Protected Routes */}
       <Route
-        path="/brocode"
+        path='/helpcode'
         element={
           <PrivateRoute>
-            <Brocode />
+            <HelpCode />
           </PrivateRoute>
         }
       />
       <Route
-        path="/settings"
+        path='/settings'
         element={
           <PrivateRoute>
             <Settings />
           </PrivateRoute>
         }
       />
+
+      {/* 404 Not Found Route */}
+      <Route path='*' element={<NotFound />} />
     </Routes>
   );
 };
