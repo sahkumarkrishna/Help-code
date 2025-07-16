@@ -14,7 +14,7 @@ const app = express();
 const FRONTEND_URL = process.env.FRONTEND_URL;
 
 const corsOptions = {
-    origin: FRONTEND_URL,
+    origin: FRONTEND_URL|| "http://help-code-omega.vercel.app",
     credentials: true,
 };
 
