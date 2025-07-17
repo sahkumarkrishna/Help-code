@@ -1,5 +1,5 @@
-﻿# HelpCode
-# AI Powered Code Reviewer
+﻿
+# AI Powered HelpCode
 
 ## Overview
 
@@ -23,7 +23,7 @@ AI Code Check is a web application that allows users to input code snippets and 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/sahkumarkrishna/AI-Powered-Code-Reviewer.git
+   git clone https://github.com/sahkumarkrishna/Help-code
 2. Navigate to the project directory: 
    cd AI-Powered-Code-Reviewer
  ## Install dependencies for the backend:   
